@@ -122,7 +122,7 @@ exec sp_helpindex alumnos;
  on alumnos(apellido)
  with drop_existing;
 
- exec sp_helpindex libros;
+ exec sp_helpindex alumnos;
 
   create clustered index I_alumnos_apellido
   on alumnos(apellido)
