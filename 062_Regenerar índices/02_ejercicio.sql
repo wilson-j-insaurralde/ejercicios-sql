@@ -72,7 +72,7 @@ características.
 */
 
 
-if OBJECT_ID('') is not null
+if OBJECT_ID('alumnos') is not null
 drop table alumnos ;
 
 create table alumnos (
