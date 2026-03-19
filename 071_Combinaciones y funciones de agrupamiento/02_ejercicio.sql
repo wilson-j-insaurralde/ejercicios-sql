@@ -54,3 +54,68 @@ en otra tabla llamada "ciudades" los nombres de las ciudades.
 7- Obtenga el monto de compra más alto de cada ciudad (3 filas)
 
 */
+
+if OBJECT_ID('visitantes') is not null 
+drop table visitantes;
+if OBJECT_ID('ciudades') is not null
+drop table ciudades;
+
+create table visitantes (
+	nombre varchar(30),
+	edad tinyint,
+	sexo char(1) default 'f',
+	domicilio varchar(30),
+	codigociudad tinyint not null,
+	mail varchar(30),
+	montocompra decimal(6,2)
+);
+
+ create table ciudades(
+  codigo tinyint identity,
+  nombre varchar(20)
+ );
+
+ insert into ciudades values('Cordoba');
+ insert into ciudades values('Carlos Paz');
+ insert into ciudades values('La Falda');
+ insert into ciudades values('Cruz del Eje');
+
+  insert into visitantes values 
+   ('Susana Molina', 35,'f','Colon 123', 1, null,59.80);
+ insert into visitantes values 
+   ('Marcos Torres', 29,'m','Sucre 56', 1, 'marcostorres@hotmail.com',150.50);
+ insert into visitantes values 
+   ('Mariana Juarez', 45,'f','San Martin 111',2,null,23.90);
+ insert into visitantes values 
+   ('Fabian Perez',36,'m','Avellaneda 213',3,'fabianperez@xaxamail.com',0);
+ insert into visitantes values 
+   ('Alejandra Garcia',28,'f',null,2,null,280.50);
+ insert into visitantes values 
+   ('Gaston Perez',29,'m',null,5,'gastonperez1@gmail.com',95.40);
+ insert into visitantes values 
+   ('Mariana Juarez',33,'f',null,2,null,90);
+
+   select c.nombre, count(*) as cantidad 
+   from ciudades as c
+   join visitantes as v 
+   on v.codigociudad=c.codigo
+   group by c.nombre;
+
+   select c.nombre,avg(montocompra) as 'promedio'
+   from ciudades as c 
+   join visitantes as v 
+   on v.codigociudad=c.codigo
+   group by c.nombre, v.sexo;
+
+   select c.nombre,count(v.mail) as cantidad
+   from ciudades as c
+   join visitantes as v 
+   on v.codigociudad=c.codigo
+   group by c.nombre; 
+
+ select c.nombre,
+  max(montocompra)
+  from visitantes as v
+  join ciudades as c
+  on codigociudad=c.codigo
+  group by c.nombre;
