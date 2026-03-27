@@ -142,6 +142,7 @@ cuales no hay inscriptos.
 
 */
 
+
 if OBJECT_ID('inscriptos') is not null
 drop table inscriptos;
 if OBJECT_ID('socios') is not  null
@@ -170,3 +171,92 @@ create table deportes (
     primary key (codigo)
 
 );
+
+ create table socios(
+  numero int identity,
+  documento char(8),
+  nombre varchar(30),
+  domicilio varchar(30),
+  constraint CK_documento_patron check (documento like '[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]'),
+  constraint PK_socios_numero
+   primary key nonclustered(numero),
+  constraint UQ_socios_documento
+   unique clustered(documento)
+ );
+
+  create table inscriptos(
+  numerosocio int not null,
+  codigodeporte tinyint,
+  matricula char(1),
+  constraint PK_inscriptos_numerodeporte
+   primary key clustered (numerosocio,codigodeporte),
+  constraint FK_inscriptos_deporte
+   foreign key (codigodeporte)
+   references deportes(codigo)
+   on update cascade,
+  constraint FK_inscriptos_socios
+   foreign key (numerosocio)
+   references socios(numero)
+   on update cascade
+   on delete cascade,
+  constraint CK_matricula_valores check (matricula in ('s','n'))
+);
+
+ insert into profesores values('21111111','Andres Acosta','Avellaneda 111');
+ insert into profesores values('22222222','Betina Bustos','Bulnes 222');
+ insert into profesores values('23333333','Carlos Caseros','Colon 333');
+
+  insert into deportes values('basquet','lunes',null);
+ insert into deportes values('futbol','lunes','23333333');
+ insert into deportes values('natacion',null,'22222222');
+ insert into deportes values('padle',default,'23333333');
+ insert into deportes (nombre,dia) values('tenis','jueves');
+
+  insert into socios values('30111111','Ana Acosta','America 111');
+ insert into socios values('30222222','Bernardo Bueno','Bolivia 222');
+ insert into socios values('30333333','Camila Conte','Caseros 333');
+ insert into socios values('30444444','Daniel Duarte','Dinamarca 444');
+
+  insert into inscriptos values(1,3,'s');
+ insert into inscriptos values(1,5,'s');
+ insert into inscriptos values(2,1,'s');
+ insert into inscriptos values(4,1,'n');
+ insert into inscriptos values(4,4,'s');
+
+
+  select s.*,d.nombre as deporte,d.dia,p.nombre as profesor
+  from socios as s
+  join inscriptos as i
+  on numero=i.numerosocio
+  join deportes as d
+  on d.codigo=i.codigodeporte
+  left join profesores as p
+  on d.profesor=p.documento;
+
+ select s.*,d.nombre as deporte,d.dia,p.nombre as profesor
+  from socios as s
+  full join inscriptos as i
+  on numero=i.numerosocio
+  left join deportes as d
+  on d.codigo=i.codigodeporte
+  left join profesores as p
+  on d.profesor=p.documento;
+
+ select p.*,d.nombre as deporte,d.dia
+  from profesores as p
+  left join deportes as d
+  on d.profesor=p.documento;
+
+ select d.nombre,count(i.codigodeporte) as cantidad
+  from deportes as d
+  left join inscriptos as i
+  on d.codigo=i.codigodeporte
+  group by d.nombre;  
+
+ exec sp_helpconstraint socios;
+
+ exec sp_helpconstraint deportes;
+
+ exec sp_helpconstraint profesores;
+
+ exec sp_helpconstraint inscriptos;
