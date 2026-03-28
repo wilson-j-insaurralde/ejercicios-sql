@@ -100,8 +100,9 @@ create table empleados(
  select (nombre+''+apellido),domicilio from empleados;
 
 
- select nombre,domicilio,'proveedor' from proveedores
+ select nombre,domicilio,'proveedor' as categoria from proveedores
  union
  select nombre,domicilio,'cliente' from clientes
  union
- select (nombre+''+apellido),domicilio,'empleados' from empleados;
+ select (nombre+''+apellido),domicilio,'empleados' from empleados
+ order by categoria;
