@@ -1,0 +1,135 @@
+"any" y "some" son sinónimos. Chequean si alguna fila de la lista resultado de una subconsulta se encuentra el valor especificado en la condición.
+
+El tipo de datos que se comparan deben ser compatibles.
+
+La sintaxis básica es:
+
+ ...VALORESCALAR OPERADORDECOMPARACION
+  ANY (SUBCONSULTA);
+Queremos saber los títulos de los libros de "Borges" que pertenecen a editoriales que han publicado también libros de "Richard Bach", es decir, si los libros de "Borges" coinciden con ALGUNA de las editoriales que publicó libros de "Richard Bach":
+
+ select titulo
+  from libros
+  where autor='Borges' and
+  codigoeditorial = any
+   (select e.codigo
+    from editoriales as e
+    join libros as l
+    on codigoeditorial=e.codigo
+    where l.autor='Richard Bach');
+La consulta interna (subconsulta) retorna una lista de valores de un solo campo (puede ejecutar la subconsulta como una consulta para probarla), luego, la consulta externa compara cada valor de "codigoeditorial" con cada valor de la lista devolviendo los títulos de "Borges" que coinciden.
+
+"all" también compara un valor escalar con una serie de valores. Chequea si TODOS los valores de la lista de la consulta externa se encuentran en la lista de valores devuelta por la consulta interna.
+Sintaxis:
+
+  VALORESCALAR OPERADORDECOMPARACION all (SUBCONSULTA);
+Veamos otro ejemplo con un operador de comparación diferente:
+
+Queremos saber si ALGUN precio de los libros de "Borges" es mayor a ALGUN precio de los libros de "Richard Bach":
+
+ select titulo,precio
+  from libros
+  where autor='Borges' and
+  precio > any
+   (select precio
+    from libros
+    where autor='Bach');
+El precio de cada libro de "Borges" es comparado con cada valor de la lista de valores retornada por la subconsulta; si ALGUNO cumple la condición, es decir, es mayor a ALGUN precio de "Richard Bach", se lista.
+
+Veamos la diferencia si empleamos "all" en lugar de "any":
+
+ select titulo,precio
+  from libros
+  where autor='borges' and
+  precio > all
+   (select precio
+    from libros
+    where autor='bach');
+El precio de cada libro de "Borges" es comparado con cada valor de la lista de valores retornada por la subconsulta; si cumple la condición, es decir, si es mayor a TODOS los precios de "Richard Bach" (o al mayor), se lista.
+
+Emplear "= any" es lo mismo que emplear "in".
+
+Emplear "<> all" es lo mismo que emplear "not in".
+
+Recuerde que solamente las subconsultas luego de un operador de comparación al cual es seguido por "any" o "all") pueden incluir cláusulas "group by".
+
+Servidor de SQL Server instalado en forma local.
+Ingresemos el siguiente lote de comandos en el SQL Server Management Studio:
+
+if object_id('libros') is not null
+  drop table libros;
+if object_id('editoriales') is not null
+  drop table editoriales;
+
+create table editoriales(
+  codigo tinyint identity,
+  nombre varchar(30),
+  primary key (codigo)
+);
+ 
+create table libros (
+  codigo int identity,
+  titulo varchar(40),
+  autor varchar(30),
+  codigoeditorial tinyint,
+  precio decimal(5,2),
+  primary key(codigo),
+ constraint FK_libros_editorial
+   foreign key (codigoeditorial)
+   references editoriales(codigo)
+   on update cascade,
+);
+
+go
+
+insert into editoriales values('Planeta');
+insert into editoriales values('Emece');
+insert into editoriales values('Paidos');
+insert into editoriales values('Siglo XXI');
+
+insert into libros values('Uno','Richard Bach',1,15);
+insert into libros values('Ilusiones','Richard Bach',4,18);
+insert into libros values('Puente al infinito','Richard Bach',2,19);
+insert into libros values('Aprenda PHP','Mario Molina',4,40);
+insert into libros values('El aleph','Borges',2,10);
+insert into libros values('Antología','Borges',1,20);
+insert into libros values('Cervantes y el quijote','Borges',3,25);
+
+-- Mostramos los títulos de los libros de "Borges" de editoriales que 
+-- han publicado también libros de "Richard Bach":
+select titulo
+  from libros
+  where autor like '%Borges%' and
+  codigoeditorial = any
+   (select e.codigo
+    from editoriales as e
+    join libros as l
+    on codigoeditorial=e.codigo
+    where l.autor like '%Bach%');
+
+-- Mostramos los títulos y precios de los libros "Borges" cuyo precio 
+-- supera a ALGUN precio de los libros de "Richard Bach":
+ select titulo,precio
+  from libros
+  where autor like '%Borges%' and
+  precio > any
+   (select precio
+    from libros
+    where autor like '%Bach%');
+
+-- Veamos la diferencia si empleamos "all" en lugar de "any":
+ select titulo,precio
+  from libros
+  where autor like '%Borges%' and
+  precio > all
+   (select precio
+    from libros
+    where autor like '%Bach%');
+
+-- Empleamos la misma subconsulta para eliminación:
+ delete from libros
+  where autor like '%Borges%' and
+  precio > all
+   (select precio
+    from libros
+    where autor like '%Bach%');

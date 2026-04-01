@@ -115,3 +115,4 @@ where domicilio like 'San Martin %';
       select codigociudad
   from clientes
   where nombre like 'G%';
+

@@ -1,6 +1,5 @@
 --Trabajamos con las tablas "libros" y "editoriales" de una librería.
 --Eliminamos las tablas si existen y las creamos:
-
  if object_id('libros') is not null
   drop table libros;
  if object_id('editoriales') is not null
