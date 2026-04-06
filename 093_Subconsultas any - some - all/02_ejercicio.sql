@@ -177,8 +177,3 @@ drop table socios;
     from inscriptos
     where cuotas=0);
     
- delete from inscriptos
-  where numerosocio=any
-   (select numerosocio 
-    from inscriptos
-    where cuotas=0);
