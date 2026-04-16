@@ -1,11 +1,11 @@
-Una empresa almacena la información de sus empleados en dos tablas llamadas "empleados" y "secciones".
-Eliminamos las tablas, si existen:
+--Una empresa almacena la información de sus empleados en dos tablas llamadas "empleados" y "secciones".
+--Eliminamos las tablas, si existen:
 
  if object_id('empleados') is not null
   drop table empleados;
  if object_id('secciones') is not null
   drop table secciones;
-Creamos las tablas:
+--Creamos las tablas:
 
  create table secciones(
   codigo tinyint identity,
@@ -38,12 +38,12 @@ Creamos las tablas:
   constraint UQ_empleados_documento
    unique(documento)
 );
-Eliminamos la vista "vista_empleados" si existe:
+--Eliminamos la vista "vista_empleados" si existe:
 
  if object_id('vista_empleados') is not null
   drop view vista_empleados;
  
-Creamos una vista con su definición oculta:
+--Creamos una vista con su definición oculta:
 
  create view vista_empleados
   with encryption
@@ -53,6 +53,6 @@ Creamos una vista con su definición oculta:
    from empleados as e
    join secciones as s
    on codigo=seccion;
-Ejecutamos el procedimiento almacenado del sistema "sp_helptext" seguido del nombre de una vista encriptada:
+--Ejecutamos el procedimiento almacenado del sistema "sp_helptext" seguido del nombre de una vista encriptada:
 
  exec sp_helptext vista_empleados;
