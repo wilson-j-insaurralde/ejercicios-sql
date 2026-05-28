@@ -31,3 +31,24 @@ No podemos consultar la tabla "sysobjects" para ver las tablas temporales, debem
  select *from tempdb..sysobjects;
 
 */
+
+--Ingresemos el siguiente lote de comandos en el SQL Server Management Studio:
+
+ create table #usuarios(
+  nombre varchar(30),
+  clave varchar(10)
+  primary key(nombre)
+);
+
+insert into #usuarios (nombre, clave) values ('Mariano','payaso');
+
+select * from #usuarios;
+
+insert into #usuarios (clave, nombre) values ('River','Juan');
+
+select * from #usuarios;
+
+insert into #usuarios (nombre,clave) values ('Boca','Luis');
+
+select * from #usuarios;
+
