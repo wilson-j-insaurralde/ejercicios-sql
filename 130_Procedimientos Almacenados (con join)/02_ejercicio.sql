@@ -162,14 +162,14 @@ create procedure pa_vender
 @codigo int =null,
 @cantidad int=1
 as 
-    if no exists (select*from libros where codigo=@codigo) or (@codigo is null)
+    if not exists (select*from libros where codigo=@codigo) or (@codigo is null)
      select 'Ingrese un codigo de libro válido'
     else
     begin 
      declare @disponible int 
      select @disponible=cantidad from libros where codigo=@codigo 
      if (@disponible<@cantidad)
-     select 'solo hay'+cast(@disponible as varchar(10)+'disponibles'
+     select 'solo hay'+cast(@disponible as varchar(10))+'disponibles'
     else
     begin 
       declare @precio decimal(6,2) 
@@ -178,3 +178,13 @@ as
        update libros set cantidad=cantidad-@cantidad where @codigo=codigo
      end
    end;
+
+
+  exec pa_vender 1,20;
+
+ select *from ventas;
+ select *from libros;
+
+ exec pa_vender 9;
+
+ exec pa_vender 5,250;
