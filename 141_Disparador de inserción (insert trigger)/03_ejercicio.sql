@@ -93,3 +93,92 @@ El trigger no se dispara porque está definido para el evento "insert".
 
 */
 
+ if object_id('inscriptos') is not null
+  drop table inscriptos;
+ if object_id('socios') is not null
+  drop table socios;
+ if object_id('morosos') is not null
+  drop table morosos;
+
+
+  create table socios (
+  documento char(8) not null,
+  nombre varchar (30),
+  domicilio varchar (30),
+  constraint PK_socios primary key (documento)  
+  );
+
+  create table inscriptos (
+  documento char(8) not null,
+  deporte varchar(30) not null,
+  matricula char(1),
+  constraint CK_inscriptos check (matricula in ('s','n')),
+  constraint PK_inscriptos primary key (documento,deporte),
+  constraint FK_inscriptos_documento foreign key(documento)
+   references socios (documento)  
+  ); 
+
+   create table morosos(
+  documento char(8) not null
+ );
+
+
+ insert into socios values ('22222222','Ana Acosta','Avellaneda 800');
+ insert into socios values ('23333333','Bernardo Bustos','Bulnes 234');
+ insert into socios values ('24444444','Carlos Caseros','Colon 321');
+ insert into socios values ('25555555','Mariana Morales','Maipu 483');
+
+ insert into inscriptos values ('22222222','tenis','s');
+ insert into inscriptos values ('22222222','natacion','n');
+ insert into inscriptos values ('23333333','tenis','n');
+ insert into inscriptos values ('24444444','tenis','s');
+ insert into inscriptos values ('24444444','futbol','s');
+
+ insert into morosos values ('22222222');
+ insert into morosos values ('23333333');
+
+
+ create trigger  dis_inscriptos_insertar
+	on inscriptos 
+	for insert 
+	as 
+	declare @doc char(8)
+	select @doc= documento from inserted
+	if exists (select * from morosos where documento=@doc)
+	begin 
+		raiserror('No puede inscribir al socio porque es moroso', 16, 1)
+		rollback transaction
+   end;
+
+   insert into inscriptos values ('25555555','tenis','s');
+   insert into inscriptos values ('23333333','futbol','s');
+
+   create trigger dis_inscriptos_insertar2
+   on inscriptos
+   for insert 
+   as 
+    if (select matricula from inserted)='n'
+	 insert into morosos select documento from inserted; 
+
+ insert into inscriptos values ('25555555','natacion','s');
+
+ insert into inscriptos values ('25555555','basquet','n');
+
+ select *from morosos;
+
+ insert into inscriptos values ('22222222','basquet','s');
+
+ insert into inscriptos values ('22222222','basquet','n');
+
+
+  create trigger dis_socios
+  on socios
+  for insert
+  as
+   raiserror('No puede ingresar nuevos socios', 16, 1)
+   rollback transaction;
+
+
+ insert into socios values('30000000','Ricardo Rojas','Rivadavia 265');
+
+ update socios set domicilio='Rivadavia 135' where documento='22222222';
