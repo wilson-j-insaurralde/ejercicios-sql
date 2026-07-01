@@ -66,3 +66,68 @@ El disparador "DIS_articulos_borrar" se activa y no permite la transacción. El d
 "DIS_articulos_borrar2" no llega a activarse.
 
 */
+
+if OBJECT_ID('articulos') is not null 
+	drop table articulos;
+
+create table articulos(
+	codigo int identity,
+	tipo varchar (30),
+	descripcion varchar(40),
+	precio decimal(8,2),
+	stock int,
+	constraint PK_articulos primary key (codigo)
+	);
+ insert into articulos values ('impresora','Epson Stylus C45',400,100);
+ insert into articulos values ('impresora','Epson Stylus C85',500,200);
+ insert into articulos values ('impresora','Epson Stylus Color 600',400,0);
+ insert into articulos values ('monitor','Samsung 14',900,0);
+ insert into articulos values ('monitor','Samsung 17',1200,0);
+ insert into articulos values ('monitor','xxx 15',1500,0);
+ insert into articulos values ('monitor','xxx 17',1600,0);
+ insert into articulos values ('monitor','zzz 15',1300,0);
+
+ create trigger DIS_articulos_borrar
+  on articulos
+  for delete
+  as 
+   if exists(select *from deleted where stock>0)--si algun registro borrado tiene stock
+   begin
+    raiserror('No puede eliminar artículos que tienen stock',16,1)
+    rollback transaction
+   end
+   else
+   begin
+     declare @cantidad int
+     select @cantidad=count(*) from deleted
+     select 'Se eliminaron ' +rtrim(cast(@cantidad as char(10)))+ ' registros'
+   end;
+
+   
+ delete from articulos where codigo=4;
+
+ delete from articulos where codigo=2;
+
+ delete from articulos where descripcion like '%xx%';
+
+ delete from articulos where codigo<=3;
+
+ create trigger DIS_articulos_borrar2
+  on articulos
+  for delete
+  as
+   declare @cantidad int
+   select @cantidad=count(*) from deleted
+   if @cantidad>1
+   begin
+    raiserror('No puede eliminar más de 1 artículo',16,1)
+    rollback transaction
+   end;
+
+ delete from articulos where codigo=3;
+
+ delete from articulos where codigo=2;
+
+ delete from articulos where tipo='monitor';
+
+ delete from articulos where tipo='impresora';
