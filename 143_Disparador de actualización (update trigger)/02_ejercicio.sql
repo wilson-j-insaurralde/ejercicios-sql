@@ -75,3 +75,79 @@ Ambos disparadores se activaron y permitieron la actualización.
 Ambos disparadores se activaron; "dis_inscriptos_actualizar_matricula" deshace la transacción.
 
 */
+
+ if object_id('libros') is not null
+  drop table libros;
+
+ create table libros(
+  codigo int identity,
+  titulo varchar(40),
+  autor varchar(30),
+  editorial varchar(20),
+  precio decimal(6,2), 
+  stock int,
+  constraint PK_libros primary key(codigo)
+ );
+
+ insert into libros values('Uno','Richard Bach','Planeta',15,100);
+ insert into libros values('Alicia en el pais...','Lewis Carroll','Planeta',18,50);
+ insert into libros values('El aleph','Borges','Emece',25,200);
+ insert into libros values('Aprenda PHP','Mario Molina','Nuevo siglo',45,200);
+
+ create trigger DIS_libros_actualizar
+  on libros
+  for update
+  as
+    raiserror('Los datos de la tabla "libros" no pueden modificarse', 10, 1)
+    rollback transaction;
+
+ update libros set titulo='Alicia en el pais de las maravillas' where codigo=2;
+
+ drop trigger DIS_libros_actualizar;
+
+ create trigger DIS_libros_actualizar_precio
+  on libros
+  for update
+  as
+   if update(precio)
+   begin
+    raiserror('El precio de un libro no puede modificarse.', 10, 1)
+    rollback transaction
+   end;
+
+ update libros set precio=30 where codigo=2;
+
+ update libros set titulo='Alicia en el pais de las maravillas' where codigo=2;
+
+ select *from libros;
+
+ update libros set precio=30,editorial='Emece' where codigo=1;
+
+ select *from libros;
+
+ drop trigger DIS_libros_actualizar_precio;
+
+ create trigger DIS_libros_actualizar2
+  on libros
+  for update
+  as
+   if (update(titulo) or update(autor) or update(editorial)) and
+    not (update(precio) or update(stock))
+   begin
+    select (d.titulo+'-'+ d.autor+'-'+d.editorial) as 'registro anterior',
+    (i.titulo+'-'+ i.autor+'-'+i.editorial) as 'registro actualizado'
+     from deleted as d
+     join inserted as i
+     on d.codigo=i.codigo
+   end
+   else
+   begin
+    raiserror('El precio y stock no pueden modificarse. La actualización no se realizó.', 10, 1)
+    rollback transaction
+   end;
+
+ update libros set editorial='Paidos', autor='Desconocido' where codigo>3;
+
+ update libros set editorial='Paidos', precio=30 where codigo>3;
+
+ update libros set codigo=9 where codigo>=3; 
