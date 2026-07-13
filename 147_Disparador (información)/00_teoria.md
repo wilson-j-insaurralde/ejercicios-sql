@@ -36,25 +36,25 @@ Aparece una tabla similar a la siguiente:
 
 
 
-name			type		updated	column
+name		---	type	---	updated --- column
 
 \-----------------------------------------------------------------
 
-dbo.condicionales	user table	yes	codigocurso
+dbo.condicionales ---	user table ---	yes ---	codigocurso
 
-dbo.condicionales	user table	yes	fecha
+dbo.condicionales ---	user table ---	yes ---	fecha
 
-dbo.inscriptos		user table	yes	numerocurso
+dbo.inscriptos	---	user table ---	yes ---	numerocurso
 
-dbo.inscriptos		user table	yes	fecha
+dbo.inscriptos	---	user table ---	yes ---	fecha
 
-dbo.condicionales	user table	yes	documento
+dbo.condicionales ---	user table ---	yes ---	documento
 
-dbo.cursos		user table	no	numero
+dbo.cursos	---	user table ---	no ---	numero
 
-dbo.cursos		user table	no	cantidadmaxima
+dbo.cursos	---	user table ---	no ---	cantidadmaxima
 
-dbo.inscriptos		user table	yes	documento
+dbo.inscriptos	---	user table ---	yes ---	documento
 
 En la columna "name" nos muestra las tablas (y demás objetos si hubiese) de las cuales depende el trigger, es decir, las tablas referenciadas en el mismo; el tipo de objeto en la columna "type" (en este caso, todas tablas); la columna "update" indica si el objeto es actualizado o no (note que la tabla "cursos" no se actualiza, solamente se consulta); la columna "column" muestra el nombre del campo que se referencia.
 
@@ -84,11 +84,11 @@ Nos muestra la siguiente información:
 
 
 
-trigger\_name		trigger\_owner	isupdate	isdelete	isinsert	isafter	isinsteadof
+trigger\_name	---	trigger\_owner --- isupdate ---	isdelete ---	isinsert ---	isafter ---isinsteadof
 
 \------------------------------------------------------------------------------------------------------------
 
-dis\_inscriptos\_insertar	dbo		0		0		1		0	1
+dis\_inscriptos\_insertar --- dbo ---	0	---	0	---	1	---	0 ---	1
 
 El nombre del trigger, su propietario; en las 3 columnas siguientes indica para qué evento se ha definido (un valor 1 indica que está definido para tal evento); las 2 últimas columnas indican el momento de disparo (un valor 1 se interpreta como verdadero y un 0 como falso). En el ejemplo, el disparador "dis\_inscriptos\_insertar" está definido para el evento de inserción (valor 1 en "isinsert") y es "instead of" (valor 1 en "isinsteadof").
 
