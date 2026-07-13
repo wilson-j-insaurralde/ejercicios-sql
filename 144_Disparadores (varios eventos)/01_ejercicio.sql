@@ -31,7 +31,7 @@
  create table morosos(
   documento char(8) not null
  );
-Ingresamos algunos registros en las 3 tablas:
+--Ingresamos algunos registros en las 3 tablas:
 
  insert into socios values('22222222','Ana Acosta','Avellaneda 800');
  insert into socios values('23333333','Bernardo Bustos','Bulnes 345');
